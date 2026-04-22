@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A card for Amr 💍</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(170deg, #F6FFA7 0%, #FFE2BF 55%, #FFCBA0 100%);
+    color: #151533;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .bg-swirls {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  /* Hero — card front centred, big */
+  .hero {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 56px 24px 40px;
+    text-align: center;
+  }
+
+  .logo {
+    margin-bottom: 36px;
+  }
+  .logo img { height: 32px; }
+
+  .hero-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(21,21,51,0.4);
+    margin-bottom: 20px;
+  }
+
+  .card-front {
+    width: 280px;
+    border-radius: 28px;
+    box-shadow: 0 24px 72px rgba(21,21,51,0.22), 0 6px 18px rgba(21,21,51,0.12);
+    display: block;
+    margin-bottom: 28px;
+  }
+
+  .hero-headline {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    color: #151533;
+    margin-bottom: 10px;
+  }
+  .hero-sub {
+    font-size: 15px;
+    color: rgba(21,21,51,0.55);
+    font-weight: 600;
+    line-height: 1.6;
+    max-width: 340px;
+  }
+
+  /* Messages section */
+  .messages-section {
+    position: relative;
+    z-index: 10;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(21,21,51,0.38);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: rgba(21,21,51,0.12);
+    border-radius: 2px;
+  }
+
+  /* Card paper for messages — like a real open card */
+  .card-paper {
+    background: rgba(245,246,236,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(21,21,51,0.12);
+    border: 1.5px solid rgba(255,255,255,0.9);
+    min-height: 400px;
+    position: relative;
+  }
+  .card-paper-header {
+    padding: 18px 24px;
+    border-bottom: 1.5px dashed rgba(21,21,51,0.1);
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 600;
+    color: rgba(21,21,51,0.42);
+  }
+
+  /* Messages laid out like a real card — overlapping, scattered */
+  .messages-canvas {
+    position: relative;
+    min-height: 500px;
+    padding: 20px;
+  }
+
+  .msg-note {
+    position: absolute;
+    max-width: 220px;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    line-height: 1.45;
+    transition: transform 0.2s ease, z-index 0.2s;
+    cursor: default;
+  }
+  .msg-note:hover {
+    z-index: 50 !important;
+    transform: rotate(0deg) scale(1.08) !important;
+  }
+  .msg-bubble {
+    padding: 14px 18px;
+    border-radius: 22px;
+    box-shadow: 0 4px 16px rgba(21,21,51,0.1);
+  }
+  .bubble-pink   { background: #FFCCDD; border-bottom-left-radius: 6px; }
+  .bubble-blue   { background: #AFEBF5; border-bottom-right-radius: 6px; }
+  .bubble-yellow { background: #F6FFA7; border-bottom-left-radius: 6px; }
+  .bubble-orange { background: #FFE2BF; border-bottom-right-radius: 6px; }
+  .bubble-lime   { background: #E1FF20; border-bottom-left-radius: 6px; }
+
+  .msg-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(21,21,51,0.48);
+    margin-bottom: 4px;
+    font-family: 'Nunito', sans-serif;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 10px;
+  }
+  .empty-state p {
+    font-size: 15px;
+    font-style: italic;
+    color: rgba(21,21,51,0.28);
+    font-weight: 600;
+  }
+
+  /* CTA — matching the card's orange bar */
+  .cta-bar {
+    margin-top: 24px;
+    background: #FFCBA0;
+    border-radius: 20px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 6px 20px rgba(21,21,51,0.12);
+  }
+  .cta-spark { font-size: 22px; flex-shrink: 0; }
+  .cta-text { flex: 1; }
+  .cta-title { font-size: 14px; font-weight: 900; color: #151533; }
+  .cta-sub { font-size: 12px; color: rgba(21,21,51,0.5); font-weight: 600; margin-top: 2px; }
+  .cta-btn {
+    background: #151533;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 0 24px 48px;
+    font-size: 13px;
+    color: rgba(21,21,51,0.35);
+    font-weight: 600;
+  }
+
+  @media print {
+    .bg-swirls, .cta-bar, footer { display: none; }
+    body { background: white; }
+    .card-paper { background: white; box-shadow: none; }
+    .hero { padding: 20px; }
+    .card-front { width: 200px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-swirls">
+  <svg width="100%" height="100%" viewBox="0 0 1000 800" fill="none" preserveAspectRatio="xMidYMid slice">
+    <path d="M-10 120 C60 70, 160 100, 210 40 C250 -10, 240 -70, 310 -40" stroke="#151533" stroke-width="6" stroke-linecap="round" opacity="0.15"/>
+    <path d="M850 -20 C920 50, 970 20, 1020 100 C1060 155, 1040 220, 1090 250" stroke="#151533" stroke-width="6" stroke-linecap="round" opacity="0.13"/>
+    <path d="M-20 650 C80 680, 100 760, 180 745 C260 730, 290 645, 375 665" stroke="#151533" stroke-width="5" stroke-linecap="round" opacity="0.11"/>
+    <path d="M750 700 C830 670, 880 730, 960 700 C1020 675, 1010 610, 1060 590" stroke="#151533" stroke-width="4" stroke-linecap="round" opacity="0.1"/>
+  </svg>
+</div>
+
+<!-- Logo -->
+<div class="hero">
+  <div class="logo">
+    <img src="Highlo-Logo%2BType-Dark-S.png" alt="highlo" onerror="this.style.display='none'">
+  </div>
+
+  <div class="hero-label">A card for you</div>
+
+  <img class="card-front" src="Gemini_Generated_Image_q76lb9q76lb9q76l.png" alt="Your card" onerror="this.style.display='none'">
+
+  <div class="hero-headline">Congratulations,<br>Amr & Nouha! 💍</div>
+  <div class="hero-sub">The whole Highlo team is rooting for you both. Here's what they wanted you to know.</div>
+</div>
+
+<!-- Messages -->
+<div class="messages-section">
+  <div class="section-label">Messages from the team</div>
+
+  <div class="card-paper">
+    <div class="card-paper-header">To Amr & Nouha — with love from the whole Highlo team 🎊</div>
+    <div class="messages-canvas" id="messages-canvas">
+      <div class="empty-state" id="empty-state">
+        <p>Messages will appear here…</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-bar">
+    <span class="cta-spark">✦</span>
+    <div class="cta-text">
+      <div class="cta-title">Create Project: Married Life</div>
+      <div class="cta-sub">Life is a multiplayer project</div>
+    </div>
+    <button class="cta-btn" onclick="window.print()">Save & Print</button>
+  </div>
+</div>
+
+<footer>
+  Made with love by Team Highlo · <a href="/" style="color:inherit;">Back to team view</a>
+</footer>
+
+<script>
+  const BUBBLE_STYLES = ['bubble-pink','bubble-blue','bubble-yellow','bubble-orange','bubble-lime'];
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function placeMessage(entry, index) {
+    const canvas = document.getElementById('messages-canvas');
+    document.getElementById('empty-state').style.display = 'none';
+    if (document.getElementById(`msg-${entry.id}`)) return;
+
+    const style = BUBBLE_STYLES[index % BUBBLE_STYLES.length];
+    const el = document.createElement('div');
+    el.className = 'msg-note';
+    el.id = `msg-${entry.id}`;
+    el.style.cssText = `left:${entry.x}%;top:${entry.y}px;transform:rotate(${entry.rotate}deg);z-index:${(index % 5) + 1}`;
+    el.innerHTML = `<div class="msg-bubble ${style}"><div class="msg-name">${escapeHtml(entry.name)}</div>${escapeHtml(entry.message)}</div>`;
+    canvas.appendChild(el);
+
+    const bottom = entry.y + 180;
+    if (bottom > canvas.offsetHeight) canvas.style.minHeight = bottom + 'px';
+  }
+
+  async function load() {
+    const res = await fetch('/api/messages');
+    const msgs = await res.json();
+    msgs.forEach((m, i) => placeMessage(m, i));
+  }
+
+  load();
+  // Refresh every 30s in case team are still signing
+  setInterval(load, 30000);
+</script>
+
+</body>
+</html>

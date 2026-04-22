@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Amr's Card — Team Highlo</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,900&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /*
+   * Brand colours — exact from Highlo brand guide
+   * Primary Dark:  #151533   Primary Light: #F5F6EC
+   * Primary Blue:  #3E68F2   Primary Lime:  #E1FF20
+   * Light Blue:    #AFEBF5   Light Yellow:  #F6FFA7
+   * Light Pink:    #FFCCDD   Light Orange:  #FFE2BF
+   * Secondary Pink:#FF87F1   Secondary Red: #FB4854
+   */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Labil Grotesk', 'Nunito', sans-serif;
+    min-height: 100vh;
+    /* Gradient matching the app screenshot — Light Yellow → warm peach */
+    background: linear-gradient(170deg, #F6FFA7 0%, #FFE2BF 55%, #FFCBA0 100%);
+    color: #151533;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Vine swirls — dark organic strokes, #151533, matching the card */
+  .bg-swirls {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 48px 32px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Highlo logo — exact reproduction from brand guide */
+  .highlo-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-word {
+    font-family: 'Labil Grotesk', 'Nunito', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: #151533;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    z-index: 10;
+    padding: 4px 32px 28px;
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+  }
+  .hero-text { flex: 1; }
+  .hero-headline {
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #151533;
+    letter-spacing: -1.5px;
+    margin-bottom: 8px;
+  }
+  .hero-sub {
+    font-size: 15px;
+    color: rgba(21,21,51,0.6);
+    line-height: 1.6;
+    font-weight: 600;
+    max-width: 400px;
+  }
+  .card-thumb {
+    flex-shrink: 0;
+    width: 115px;
+  }
+  .card-thumb img {
+    width: 115px;
+    border-radius: 18px;
+    box-shadow: 0 16px 44px rgba(21,21,51,0.22);
+    display: block;
+  }
+  .card-thumb-label {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(21,21,51,0.38);
+    margin-top: 7px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  /* Main grid */
+  main {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+    padding: 0 32px 40px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(21,21,51,0.38);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: rgba(21,21,51,0.12);
+    border-radius: 2px;
+  }
+
+  /* Card paper */
+  .card-paper {
+    background: rgba(245,246,236,0.82);  /* Primary Light with opacity */
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    min-height: 500px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(21,21,51,0.12);
+    border: 1.5px solid rgba(255,255,255,0.9);
+  }
+  .card-paper-header {
+    padding: 16px 22px;
+    border-bottom: 1.5px dashed rgba(21,21,51,0.1);
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 600;
+    color: rgba(21,21,51,0.42);
+  }
+  .messages-container {
+    position: relative;
+    min-height: 440px;
+    padding: 14px;
+  }
+  .empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .empty-state p {
+    font-size: 15px;
+    font-style: italic;
+    color: rgba(21,21,51,0.25);
+    font-weight: 600;
+  }
+
+  /* Message bubbles — matching card's pink/blue chat style exactly */
+  .msg-sticker {
+    position: absolute;
+    max-width: 210px;
+    font-family: 'Caveat', cursive;
+    cursor: default;
+    transition: transform 0.2s ease;
+  }
+  .msg-sticker:hover { z-index: 20; transform: rotate(0deg) scale(1.06) !important; }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: 22px;
+    font-size: 17px;
+    line-height: 1.45;
+    box-shadow: 0 3px 10px rgba(21,21,51,0.09);
+  }
+  /* Exact brand tertiary colours */
+  .bubble-pink   { background: #FFCCDD; border-bottom-left-radius: 6px; }
+  .bubble-blue   { background: #AFEBF5; border-bottom-right-radius: 6px; }
+  .bubble-yellow { background: #F6FFA7; border-bottom-left-radius: 6px; }
+  .bubble-orange { background: #FFE2BF; border-bottom-right-radius: 6px; }
+  .bubble-lime   { background: #E1FF20; border-bottom-left-radius: 6px; }
+
+  .msg-name {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(21,21,51,0.48);
+    margin-bottom: 3px;
+    font-family: 'Nunito', sans-serif;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  /* Sidebar */
+  .sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+  .panel {
+    background: rgba(245,246,236,0.78);  /* Primary Light */
+    backdrop-filter: blur(10px);
+    border-radius: 22px;
+    padding: 22px 20px;
+    border: 1.5px solid rgba(255,255,255,0.85);
+    box-shadow: 0 6px 22px rgba(21,21,51,0.09);
+  }
+
+  .panel-title {
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+    color: #151533;
+  }
+  .panel-sub {
+    font-size: 13px;
+    color: rgba(21,21,51,0.48);
+    line-height: 1.5;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(21,21,51,0.38);
+    margin-bottom: 6px;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.65);
+    border: 1.5px solid rgba(21,21,51,0.1);
+    border-radius: 14px;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: #151533;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+    resize: none;
+    margin-bottom: 14px;
+  }
+  input[type="text"]:focus, textarea:focus {
+    border-color: #151533;
+    background: white;
+  }
+  textarea {
+    height: 100px;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .char-count {
+    text-align: right;
+    font-size: 11px;
+    color: rgba(21,21,51,0.28);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  /* Submit — Primary Dark, matches the "Add" button in the card */
+  .btn-submit {
+    width: 100%;
+    background: #151533;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: -0.2px;
+  }
+  .btn-submit:hover { opacity: 0.82; }
+  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .success-msg {
+    background: #AFEBF5;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #151533;
+    display: none;
+    margin-bottom: 14px;
+  }
+  .success-msg.visible { display: block; }
+
+  /* CTA bar — matches the orange "Create Project: Married Life" card exactly */
+  .cta-bar {
+    background: #FFCBA0;
+    border-radius: 20px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 6px 20px rgba(21,21,51,0.12);
+  }
+  .cta-spark { font-size: 20px; flex-shrink: 0; }
+  .cta-text { flex: 1; }
+  .cta-title { font-size: 13px; font-weight: 900; color: #151533; letter-spacing: -0.2px; }
+  .cta-sub { font-size: 11px; color: rgba(21,21,51,0.5); font-weight: 600; margin-top: 2px; }
+  .cta-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .cta-btn {
+    background: #151533;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .cta-x {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: rgba(21,21,51,0.4);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  /* Signers */
+  .signers-title {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(21,21,51,0.38);
+    margin-bottom: 10px;
+  }
+  .signer-pill {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 4px 6px 0;
+    color: #151533;
+  }
+
+  .btn-row { display: flex; gap: 8px; }
+  .btn-ghost {
+    flex: 1;
+    background: rgba(245,246,236,0.7);
+    color: #151533;
+    border: 1.5px solid rgba(21,21,51,0.12);
+    border-radius: 14px;
+    padding: 11px;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.85); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #151533;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.3s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; }
+    .hero { flex-direction: column-reverse; }
+    .card-thumb { align-self: flex-end; }
+  }
+
+  @media print {
+    .sidebar, header { display: none; }
+    main { grid-template-columns: 1fr; }
+    body { background: white; }
+    .bg-swirls { display: none; }
+    .card-paper { background: white; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Dark vine swirls — #151533, matching the card decorations exactly -->
+<div class="bg-swirls">
+  <svg width="100%" height="100%" viewBox="0 0 1400 900" fill="none" preserveAspectRatio="xMidYMid slice">
+    <path d="M-10 120 C60 70, 160 100, 210 40 C250 -10, 240 -70, 310 -40" stroke="#151533" stroke-width="6" stroke-linecap="round" opacity="0.18"/>
+    <path d="M1100 -30 C1170 50, 1220 20, 1290 100 C1340 155, 1320 230, 1390 255" stroke="#151533" stroke-width="6" stroke-linecap="round" opacity="0.15"/>
+    <path d="M1230 350 C1170 410, 1200 500, 1160 560 C1120 620, 1050 600, 1020 670 C990 730, 1040 800, 1000 850" stroke="#151533" stroke-width="5" stroke-linecap="round" opacity="0.13"/>
+    <path d="M-20 700 C80 735, 100 830, 190 815 C280 800, 310 710, 400 730 C475 748, 490 820, 570 808" stroke="#151533" stroke-width="5" stroke-linecap="round" opacity="0.12"/>
+    <path d="M420 870 C510 830, 580 885, 660 855 C745 822, 760 755, 845 768" stroke="#151533" stroke-width="4" stroke-linecap="round" opacity="0.09"/>
+  </svg>
+</div>
+
+<header>
+  <div class="highlo-logo">
+    <img src="Highlo-Logo%2BType-Dark-S.png" alt="highlo" style="height:38px;">
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-headline">Sign Amr's<br>wedding card 💍</div>
+    <div class="hero-sub">He's getting married! Write a note — it'll appear inside the card for the whole team to see.</div>
+  </div>
+  <div class="card-thumb">
+    <img src="Gemini_Generated_Image_q76lb9q76lb9q76l.png" alt="Card front" onerror="this.parentElement.style.display='none'">
+    <div class="card-thumb-label">Card front</div>
+  </div>
+</div>
+
+<main>
+  <div>
+    <div class="section-label">Inside the card</div>
+    <div class="card-paper">
+      <div class="card-paper-header">To Amr & Nouha — with love from the whole Highlo team 🎊</div>
+      <div class="messages-container" id="messages-container">
+        <div class="empty-state" id="empty-state">
+          <p>Be the first to sign…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="panel">
+      <div class="panel-title">Write your message ✍️</div>
+      <div class="panel-sub">Shows up in your style on the card. Everyone can see it.</div>
+
+      <div id="success-msg" class="success-msg">✓ Your message is on the card!</div>
+
+      <label for="name-input">Your name</label>
+      <input type="text" id="name-input" placeholder="e.g. Thish" maxlength="30" autocomplete="off">
+
+      <label for="msg-input">Your message</label>
+      <textarea id="msg-input" placeholder="Write something from the heart…" maxlength="200"></textarea>
+      <div class="char-count"><span id="char-remaining">200</span> left</div>
+
+      <button class="btn-submit" id="submit-btn" onclick="submitMessage()">Sign the card →</button>
+    </div>
+
+    <!-- Exactly matches the orange "Create Project: Married Life" CTA from the app screenshot -->
+    <div class="cta-bar">
+      <span class="cta-spark">✦</span>
+      <div class="cta-text">
+        <div class="cta-title">Create Project: Married Life</div>
+        <div class="cta-sub">Life is a multiplayer project</div>
+      </div>
+      <div class="cta-actions">
+        <a class="cta-btn" href="/for-amr" target="_blank">Add</a>
+        <button class="cta-x">×</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="signers-title">Who's signed</div>
+      <div id="signers-list"><span style="color:rgba(21,21,51,0.25);font-size:13px;font-weight:600;">No one yet…</span></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="window.print()">🖨 Print</button>
+      <a class="btn-ghost" href="/for-amr" target="_blank">👀 Amr's view</a>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const BUBBLE_STYLES = ['bubble-pink','bubble-blue','bubble-yellow','bubble-orange','bubble-lime'];
+
+  document.getElementById('msg-input').addEventListener('input', function() {
+    document.getElementById('char-remaining').textContent = 200 - this.value.length;
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function placeMessage(entry, index) {
+    const container = document.getElementById('messages-container');
+    document.getElementById('empty-state').style.display = 'none';
+    if (document.getElementById(`msg-${entry.id}`)) return;
+
+    const style = BUBBLE_STYLES[index % BUBBLE_STYLES.length];
+    const el = document.createElement('div');
+    el.className = 'msg-sticker';
+    el.id = `msg-${entry.id}`;
+    el.style.cssText = `left:${entry.x}%;top:${entry.y}px;transform:rotate(${entry.rotate}deg);z-index:${(index%5)+1}`;
+    el.innerHTML = `<div class="msg-bubble ${style}"><div class="msg-name">${escapeHtml(entry.name)}</div>${escapeHtml(entry.message)}</div>`;
+    container.appendChild(el);
+
+    const bottom = entry.y + 150;
+    if (bottom > container.offsetHeight) container.style.minHeight = bottom + 'px';
+  }
+
+  function updateSigners(messages) {
+    const list = document.getElementById('signers-list');
+    if (!messages.length) {
+      list.innerHTML = '<span style="color:rgba(21,21,51,0.25);font-size:13px;font-weight:600;">No one yet…</span>';
+      return;
+    }
+    list.innerHTML = messages.map((m, i) =>
+      `<span class="signer-pill ${BUBBLE_STYLES[i % BUBBLE_STYLES.length]}">${escapeHtml(m.name)}</span>`
+    ).join('');
+  }
+
+  async function loadMessages() {
+    const res = await fetch('/api/messages');
+    const msgs = await res.json();
+    msgs.forEach((m, i) => placeMessage(m, i));
+    updateSigners(msgs);
+  }
+
+  async function submitMessage() {
+    const name = document.getElementById('name-input').value.trim();
+    const message = document.getElementById('msg-input').value.trim();
+    if (!name) { showToast('Add your name first'); return; }
+    if (!message) { showToast('Write something first'); return; }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Signing…';
+
+    try {
+      await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, message })
+      });
+      const all = await (await fetch('/api/messages')).json();
+      all.forEach((m, i) => placeMessage(m, i));
+      updateSigners(all);
+      document.getElementById('msg-input').value = '';
+      document.getElementById('char-remaining').textContent = '200';
+      document.getElementById('success-msg').classList.add('visible');
+      showToast('✦ Signed!');
+    } catch { showToast('Something went wrong'); }
+
+    btn.disabled = false;
+    btn.textContent = 'Sign the card →';
+  }
+
+  loadMessages();
+  setInterval(async () => {
+    const all = await (await fetch('/api/messages')).json();
+    all.forEach((m, i) => placeMessage(m, i));
+    updateSigners(all);
+  }, 15000);
+</script>
+</body>
+</html>
