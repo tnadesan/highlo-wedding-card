@@ -11,23 +11,25 @@ const MESSAGES_KEY = 'wedding-card-messages';
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-async function redisGet(key) {
-  const res = await fetch(`${REDIS_URL}/get/${key}`, {
-    headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
-  });
-  const data = await res.json();
-  return data.result ? JSON.parse(data.result) : [];
-}
-
-async function redisSet(key, value) {
-  await fetch(`${REDIS_URL}/set/${key}`, {
+async function redisCommand(...args) {
+  const res = await fetch(REDIS_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${REDIS_TOKEN}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ value: JSON.stringify(value) })
+    body: JSON.stringify(args)
   });
+  return res.json();
+}
+
+async function redisGet(key) {
+  const data = await redisCommand('GET', key);
+  return data.result ? JSON.parse(data.result) : [];
+}
+
+async function redisSet(key, value) {
+  await redisCommand('SET', key, JSON.stringify(value));
 }
 
 app.get('/api/messages', async (req, res) => {
