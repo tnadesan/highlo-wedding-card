@@ -48,14 +48,16 @@ app.post('/api/messages', async (req, res) => {
 
   try {
     const messages = await redisGet(MESSAGES_KEY);
+    const col = messages.length % 2;          // alternate left / right column
+    const row = Math.floor(messages.length / 2);
     const entry = {
       id: Date.now().toString(),
       name: name.trim(),
       message: message.trim(),
       timestamp: new Date().toISOString(),
-      x: 10 + Math.random() * 55,
-      y: 20 + messages.length * 160,
-      rotate: -5 + Math.random() * 10,
+      x: col === 0 ? 4 + Math.random() * 6 : 52 + Math.random() * 6,
+      y: 20 + row * 210 + col * 30,          // left col slightly higher than right
+      rotate: -4 + Math.random() * 8,
       color: ['#1a1aff','#cc0000','#006600','#8800cc','#cc6600'][messages.length % 5]
     };
     messages.push(entry);
