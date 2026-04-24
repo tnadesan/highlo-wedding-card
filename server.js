@@ -42,21 +42,36 @@ app.get('/api/messages', async (req, res) => {
   }
 });
 
+// Estimate rendered bubble height from message text length.
+// Based on Caveat 17px, ~22 chars/line, 26px line height, plus name + padding.
+function estimateBubbleHeight(text) {
+  const lines = Math.ceil(text.length / 22);
+  return 20 + lines * 26 + 28; // name(20) + text + padding(28)
+}
+
 app.post('/api/messages', async (req, res) => {
   const { name, message } = req.body;
   if (!name || !message) return res.status(400).json({ error: 'Name and message required' });
 
   try {
     const messages = await redisGet(MESSAGES_KEY);
-    const col = messages.length % 2;          // alternate left / right column
-    const row = Math.floor(messages.length / 2);
+    const GAP = 28; // minimum px gap between messages in same column
+
+    // Track the bottom edge of each column based on existing messages
+    const colBottom = [20, 48]; // left col starts higher, right col offset
+    messages.forEach((m, i) => {
+      const c = i % 2;
+      colBottom[c] = m.y + estimateBubbleHeight(m.message) + GAP;
+    });
+
+    const col = messages.length % 2;
     const entry = {
       id: Date.now().toString(),
       name: name.trim(),
       message: message.trim(),
       timestamp: new Date().toISOString(),
-      x: col === 0 ? 4 + Math.random() * 6 : 52 + Math.random() * 6,
-      y: 20 + row * 210 + col * 30,          // left col slightly higher than right
+      x: col === 0 ? 4 + Math.random() * 5 : 52 + Math.random() * 5,
+      y: colBottom[col],
       rotate: -4 + Math.random() * 8,
       color: ['#1a1aff','#cc0000','#006600','#8800cc','#cc6600'][messages.length % 5]
     };
