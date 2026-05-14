@@ -123,25 +123,27 @@
     color: rgba(21,21,51,0.42);
   }
 
-  /* Messages laid out like a real card — overlapping, scattered */
+  /* Messages laid out like a real card */
   .messages-canvas {
-    position: relative;
-    min-height: 500px;
     padding: 20px;
+    columns: 2;
+    column-gap: 14px;
+    min-height: 300px;
   }
 
   .msg-note {
-    position: absolute;
-    max-width: 220px;
+    display: inline-block;
+    width: 100%;
+    break-inside: avoid;
+    margin-bottom: 14px;
     font-family: 'Caveat', cursive;
     font-size: 18px;
     line-height: 1.45;
-    transition: transform 0.2s ease, z-index 0.2s;
+    transition: transform 0.2s ease;
     cursor: default;
   }
   .msg-note:hover {
-    z-index: 50 !important;
-    transform: rotate(0deg) scale(1.08) !important;
+    transform: rotate(0deg) scale(1.06) !important;
   }
   .msg-bubble {
     padding: 14px 18px;
@@ -296,12 +298,9 @@
     const el = document.createElement('div');
     el.className = 'msg-note';
     el.id = `msg-${entry.id}`;
-    el.style.cssText = `left:${entry.x}%;top:${entry.y}px;transform:rotate(${entry.rotate}deg);z-index:${(index % 5) + 1}`;
+    el.style.cssText = `transform:rotate(${entry.rotate}deg)`;
     el.innerHTML = `<div class="msg-bubble ${style}"><div class="msg-name">${escapeHtml(entry.name)}</div>${escapeHtml(entry.message)}</div>`;
     canvas.appendChild(el);
-
-    const bottom = entry.y + 180;
-    if (bottom > canvas.offsetHeight) canvas.style.minHeight = bottom + 'px';
   }
 
   async function load() {

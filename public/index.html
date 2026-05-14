@@ -153,17 +153,17 @@
     color: rgba(21,21,51,0.42);
   }
   .messages-container {
-    position: relative;
-    min-height: 440px;
     padding: 14px;
+    columns: 2;
+    column-gap: 12px;
+    min-height: 440px;
   }
   .empty-state {
-    position: absolute;
-    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
+    min-height: 400px;
+    column-span: all;
   }
   .empty-state p {
     font-size: 15px;
@@ -174,13 +174,15 @@
 
   /* Message bubbles — matching card's pink/blue chat style exactly */
   .msg-sticker {
-    position: absolute;
-    max-width: 210px;
+    display: inline-block;
+    width: 100%;
+    break-inside: avoid;
+    margin-bottom: 12px;
     font-family: 'Caveat', cursive;
     cursor: default;
     transition: transform 0.2s ease;
   }
-  .msg-sticker:hover { z-index: 20; transform: rotate(0deg) scale(1.06) !important; }
+  .msg-sticker:hover { transform: rotate(0deg) scale(1.04) !important; }
 
   .msg-bubble {
     padding: 12px 16px;
@@ -529,12 +531,9 @@
     const el = document.createElement('div');
     el.className = 'msg-sticker';
     el.id = `msg-${entry.id}`;
-    el.style.cssText = `left:${entry.x}%;top:${entry.y}px;transform:rotate(${entry.rotate}deg);z-index:${(index%5)+1}`;
+    el.style.cssText = `transform:rotate(${entry.rotate}deg)`;
     el.innerHTML = `<div class="msg-bubble ${style}"><div class="msg-name">${escapeHtml(entry.name)}</div>${escapeHtml(entry.message)}</div>`;
     container.appendChild(el);
-
-    const bottom = entry.y + 150;
-    if (bottom > container.offsetHeight) container.style.minHeight = bottom + 'px';
   }
 
   function updateSigners(messages) {
